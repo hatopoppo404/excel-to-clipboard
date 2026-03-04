@@ -37,45 +37,13 @@ dropZone.addEventListener('drop', (e) => {
         // これで rows[0][0] みたいに座標でアクセスできる
         const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-        let hdrIndex = rows.findIndex(row => row.includes("品目")); // 「品目」がある行を探す
-        if (hdrIndex === -1) return alert("見出しが見つかりませんでした");
-
-        const headerRow = rows[hdrIndex]; // 見出し行そのもの
-        const pnColIdx = headerRow.indexOf("品目");
-        const poColIdx = headerRow.indexOf("注文番号/\n伝票番号(オーダ)");
-        const tejunColIdx = headerRow.indexOf("作業手順\n番号");
-        const junjoColIdx = headerRow.indexOf("順序\n番号");
-        const meisaiColIdx = headerRow.indexOf("明細\n番号");
-        const qtyColIdx = headerRow.indexOf("計画数量");
-        const whColIdx = headerRow.indexOf("保管場所");
-        const lastColIdx = headerRow.length;
-
-        const resultText = rows.slice(hdrIndex + 1)
-            .filter(row => row[lastColIdx] !== undefined && row[lastColIdx] !== "") // 品目が空でない行だけ
-            .map(row => {
-                // 列の順番を自由に入れ替えて、新しい配列を作る
-                const rearranged = [
-                    row[pnColIdx],
-                    row[poColIdx],
-                    row[tejunColIdx],
-                    row[junjoColIdx],
-                    row[meisaiColIdx],
-                    row[qtyColIdx],
-                    row[whColIdx],
-                    row[lastColIdx]
-                ];
-
-                // 配列をタブ（\t）でつなげて一行の文字列にする
-                return rearranged.join('\t');
-            })
-            .join('\n'); // 最後に行同士を改行（\n）でつなぐ
-
+        const resultText = formatData(rows);
 
         // // F. コンソールで中身を確認！
         // console.log("読み込み成功！データの中身:", rows);
         // G. クリップボードにコピーする
         navigator.clipboard.writeText(resultText)
-            .then(() => alert('Excelの内容をクリップボードにコピーしました！'))
+            .then(() => alert('Excelの内容を整形してクリップボードにコピーしました'))
             .catch(err => alert('コピーに失敗しました: ' + err));
     };
 
@@ -83,3 +51,71 @@ dropZone.addEventListener('drop', (e) => {
     reader.readAsArrayBuffer(file);
 
 });
+
+btn.addEventListener('click', async () => {
+    const pastedText = await navigator.clipboard.readText();
+
+    // 1. 行に分割する（ダブルクォーテーション内の改行は無視する正規表現）
+    // [^"] は「" 以外の文字」、(?:"[^"]*")* は「" で囲まれた中身」を意味するよ
+    const rowMatches = pastedText.match(/(?:(?:"[^"]*")|[^"\r\n])+/g);
+
+    if (!rowMatches) return;
+
+    const rows = rowMatches.map(rowLine => {
+        // 2. 各行をタブで分割する（ここでもセル内のタブを考慮）
+        // セル内改行がある場合、セル自体が " " で囲まれているのでそれを剥がす
+        const cells = rowLine.split('\t').map(cell => {
+            let content = cell.trim();
+            // 先頭と末尾に " があったら削除し、内部の ""（Excel特有の回避）を " に戻す
+            if (content.startsWith('"') && content.endsWith('"')) {
+                content = content.slice(1, -1).replace(/""/g, '"');
+            }
+            return content;
+        });
+        return cells;
+    });
+
+    // --- 【ここまで】 ---
+
+    const finalString = formatData(rows); // ★呼び出し
+    await navigator.clipboard.writeText(finalString)
+        .then(() => alert('クリップボードの内容を整形しました'))
+        .catch(err => alert('コピーに失敗しました: ' + err));
+});
+
+
+function formatData(rows) {
+    let hdrIndex = rows.findIndex(row => row.includes("品目")); // 「品目」がある行を探す
+    if (hdrIndex === -1) return alert("見出しが見つかりませんでした");
+    console.log(rows);
+
+    const headerRow = rows[hdrIndex];
+    const lastColIdx = (headerRow[headerRow.length - 1] == "") ? headerRow.length - 1 : headerRow.length; // 最後の列のインデックスを取得
+    const targetColNames = [
+        "品目",
+        "注文番号/\n伝票番号(オーダ)",
+        "作業手順\n番号",
+        "順序\n番号",
+        "明細\n番号",
+        "計画数量",
+        "保管場所"
+    ];
+
+    const colIndices = targetColNames.map(name => {
+        return headerRow.findIndex(cell => cell && cell.replace(/\s/g, '') === name.replace(/\s/g, '')); // 空白を無視して比較
+    });
+    colIndices.push(lastColIdx);
+    console.log(colIndices);
+    const resultText = rows
+        .filter(row => ![undefined, ""].includes(row[lastColIdx])) // 空でない行だけ
+        .map(row => {
+            // 配列をタブ（\t）でつなげて一行の文字列にする
+            return colIndices
+                .map(idx => row[idx]) // 各インデックスの値を配列化
+                .join('\t');                // それをタブで結合
+        })
+        .join('\n'); // 最後に行同士を改行（\n）でつなぐ
+
+    console.log(resultText);
+    return resultText;
+}
