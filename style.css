@@ -11,8 +11,8 @@ body {
     /* -----------------
         background
     -------------------*/
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
+    background: linear-gradient(135deg, #474747 0%, #818284 25%, #838387 50%, #79797a 75%, #3c3c3c 100%);
+    height: 100vh;
     margin: 0;
     overflow: hidden;
 }
@@ -20,11 +20,11 @@ body {
 
 header {
     margin: 10px 20px;
-    padding: 10px 20px;
+    padding: 20px 40px;
     background: rgba(255, 255, 255, 1);
     /* backdrop-filter: blur(10px); */
     border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 9999px;
+    border-radius: 20px;
 
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
@@ -54,9 +54,9 @@ header {
     -------------------*/
     display: flex;
     justify-content: center;
-    align-items: center;
+    /* align-items: center; */
     font-family: sans-serif;
-    margin: 0;
+    margin: 0 20px;
 
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
@@ -64,8 +64,10 @@ header {
     border-radius: 20px;
     padding: 40px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    width: 90%;
-    max-width: 500px;
+    /* width: 80%;
+    max-width: calc(100% - 40px); */
+    height: 60%;
+    max-height: 600px;
     text-align: center;
     color: white;
 }
@@ -77,11 +79,34 @@ header {
     color: white;
     border-radius: 15px;
     padding: 40px 20px;
+    height: 25%;
+    width: calc(100% - 40px);
     cursor: pointer;
     transition: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #drop-zone:hover {
     background: rgba(255, 255, 255, 0.1);
     border-color: white;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+small {
+    color: white;
+    text-align: center;
 }
