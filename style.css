@@ -35,15 +35,13 @@ header {
 #page-title {
     font-size: 1.5rem;
     color: white;
-    /* 1. 背景にグラデーションを指定
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    margin-bottom: 0.5rem;
+}
 
-    2. 背景を「文字の形」でクリップする（ここがキモ！）
-    -webkit-background-clip: text;
-    background-clip: text;
-
-    3. 本来の文字色を「透明」にする
-    color: transparent; */
+#page-description {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 5px;
 }
 
 
