@@ -53,24 +53,80 @@ header {
             layout
     -------------------*/
     display: flex;
-    justify-content: center;
-    align-items: center;
+    /* justify-content: center; */
+    /* align-items: center; */
     flex-direction: column;
     font-family: sans-serif;
     margin: 0 20px;
-
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 20px;
     padding: 40px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    /* width: 80%;
-    max-width: calc(100% - 40px); */
-    height: 60%;
-    max-height: 600px;
     text-align: center;
     color: white;
+}
+
+.visually-hidden {
+    /* コンテンツの流れから切り離す */
+    position: absolute;
+    /* 誤ったコードに対処するための回避策 */
+    white-space: nowrap;
+    /* 可能な限り文字サイズを小さくするための処理
+   * (スクリーンリーダー中には height と width が 0 のものを無視するため)
+   */
+    width: 1px;
+    height: 1px;
+    /* オーバーフローしているコンテンツを隠す */
+    overflow: hidden;
+    /* 要素サイズを変更しうるプロパティのリセット */
+    border: 0;
+    padding: 0;
+    /* 要素のどの部分が表示されるかを定義するもの */
+    /* 古いブラウザでは使用できない */
+    clip: rect(0 0 0 0);
+    /* 最近のブラウザ用
+   * コンテンツを非表示にする設定  */
+    clip-path: inset(50%);
+    /* 今現在なぜ-1pxがここで設定されるかは分かっていないそうです。
+   * それに加えていくつか問題もあるそうです 
+   * (参考: https://github.com/h5bp/html5-boilerplate/issues/1985)
+   */
+    margin: -1px;
+}
+
+#mode-selector {
+    margin-bottom: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    gap: 30px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+label {
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 9999px;
+    padding: 10px 20px;
+}
+
+label:hover {
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    color: rgb(255, 255, 255);
+}
+
+label:has(input:checked) {
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    color: rgb(255, 255, 255);
+}
+
+#specification {
+    text-align: left;
+    line-height: 1.5rem;
+    color: rgba(255, 255, 255, 0.5);
 }
 
 /* 3. ドロップエリア */
@@ -82,12 +138,15 @@ header {
     padding: 40px 20px;
     height: 25%;
     width: calc(100% - 40px);
+    max-width: 600px;
     cursor: pointer;
     transition: 0.3s;
     display: flex;
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
+    font-size: large;
+    margin: 30px 0;
 }
 
 #drop-zone:hover {
@@ -97,9 +156,11 @@ header {
 
 #btn-area {
     margin-top: 20px;
-    padding: 40px 20px;
+    /* padding: 40px 20px; */
     width: calc(100% - 40px);
+    max-width: 600px;
     height: 60px;
+    margin: 30px 0;
 }
 
 #btn {
@@ -120,7 +181,7 @@ header {
     background: rgba(57, 134, 129, 1);
     transform: scale(1.007);
     /* border-color: white; */
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
 }
 
 footer {

@@ -26,11 +26,25 @@
         <h1 id="page-title">Excel to Clipboard</h1>
     </header>
     <main id="container">
+        <div id="mode-selector">
+            <label>
+                <input type="radio" name="mode" value="poWhMove" class="visually-hidden" checked>
+                指図移動
+            </label>
+
+            <label>
+                <input type="radio" name="mode" value="cancelMo" class="visually-hidden">
+                注文取消し
+            </label>
+        </div>
+        <div id="specification">
+            <p></p>
+        </div>
         <div id="drop-zone">
-            ここにExcelをドロップ！
+            Excelをドロップで変換
         </div>
         <div id="btn-area">
-            <button id="btn" class="btn">クリップボードから整形</button>
+            <button id="btn" class="btn">クリップボードから変換</button>
         </div>
     </main>
 

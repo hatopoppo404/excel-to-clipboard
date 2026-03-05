@@ -1,6 +1,54 @@
 'use strict';
+const configs = {
+    poWhMove: {
+        colNames: [
+            "品目",
+            "注文番号/\n伝票番号(オーダ)",
+            "作業手順\n番号",
+            "順序\n番号",
+            "明細\n番号",
+            "計画数量",
+            "保管場所",
+            "追加：移動先倉庫"
+        ]
+    },
+    cancelMo: {
+        colNames: [
+            "注文番号/\n伝票番号(オーダ)",
+            "品目",
+            "記述",
+            "型式",
+            "計画数量",
+            "追加：キャンセル理由",
+            "取引先",
+            "名前"
+        ]
+    }
+};
 
 const dropZone = document.getElementById('drop-zone');
+const specification = document.getElementById('specification');
+specification.innerHTML =
+    "【抽出列】　品目、伝票番号、作業手順番号、順序番号、明細番号、計画数量、保管場所、移動先倉庫<br>　※「移動先倉庫」を最終列に見出しなしで書き込んでください";
+let currentConfig = configs.poWhMove; // デフォルトのモードを設定
+
+document.querySelectorAll('input[name="mode"]').forEach(input => {
+    input.addEventListener('change', (e) => {
+        const config = document.querySelector('input[name="mode"]:checked')
+        switch (config.value) {
+            case "poWhMove":
+                currentConfig = configs[config.value];
+                specification.innerHTML =
+                    "【抽出列】　品目、伝票番号、作業手順番号、順序番号、明細番号、計画数量、保管場所、移動先倉庫<br>　※「移動先倉庫」を最終列に見出しなしで書き込んでください";
+                break;
+            case "cancelMo":
+                currentConfig = configs[config.value];
+                specification.innerHTML =
+                    "【抽出列】　注文番号、品目、記述、型式、計画数量、キャンセル理由、仕入先コード、仕入先名<br>　※「キャンセル理由」を最終列に見出しなしで書き込んでください";
+                break;
+        }
+    });
+});
 
 dropZone.addEventListener('dragover', (e) => {
     e.preventDefault(); // ブラウザの標準動作（ファイルを開く）を止める
@@ -37,7 +85,8 @@ dropZone.addEventListener('drop', (e) => {
         // これで rows[0][0] みたいに座標でアクセスできる
         const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-        const resultText = formatData(rows);
+        const resultText = formatData(rows, currentConfig);
+        if (!finalString) return; // 失敗してたらここで止める
 
         // // F. コンソールで中身を確認！
         // console.log("読み込み成功！データの中身:", rows);
@@ -77,34 +126,30 @@ btn.addEventListener('click', async () => {
 
     // --- 【ここまで】 ---
 
-    const finalString = formatData(rows); // ★呼び出し
+    const finalString = formatData(rows, currentConfig); // ★呼び出し
+    if (!finalString) return; // 失敗してたらここで止める
     await navigator.clipboard.writeText(finalString)
         .then(() => alert('クリップボードの内容を整形しました'))
         .catch(err => alert('コピーに失敗しました: ' + err));
 });
 
 
-function formatData(rows) {
+function formatData(rows, config) {
     let hdrIndex = rows.findIndex(row => row.includes("品目")); // 「品目」がある行を探す
     if (hdrIndex === -1) return alert("見出しが見つかりませんでした");
     console.log(rows);
 
     const headerRow = rows[hdrIndex];
     const lastColIdx = (headerRow[headerRow.length - 1] == "") ? headerRow.length - 1 : headerRow.length; // 最後の列のインデックスを取得
-    const targetColNames = [
-        "品目",
-        "注文番号/\n伝票番号(オーダ)",
-        "作業手順\n番号",
-        "順序\n番号",
-        "明細\n番号",
-        "計画数量",
-        "保管場所"
-    ];
+    console.log("lastColIdx:", lastColIdx);
+
+    const targetColNames = config.colNames;
 
     const colIndices = targetColNames.map(name => {
+        if (name.includes("追加：")) return lastColIdx;
         return headerRow.findIndex(cell => cell && cell.replace(/\s/g, '') === name.replace(/\s/g, '')); // 空白を無視して比較
     });
-    colIndices.push(lastColIdx);
+
     console.log(colIndices);
     const resultText = rows
         .filter(row => ![undefined, ""].includes(row[lastColIdx])) // 空でない行だけ
