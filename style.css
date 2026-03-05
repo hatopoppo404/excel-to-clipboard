@@ -201,3 +201,96 @@ small {
     color: white;
     text-align: center;
 }
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* 最初は完全に透明な黒にする */
+    background-color: rgba(0, 0, 0, 0);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    visibility: hidden;
+    /* ★background-color も transition に追加！ */
+    transition: background-color 70ms, visibility 70ms;
+    pointer-events: none;
+}
+
+/* アラートが「開いた」時の状態 */
+.modal-overlay.is-open {
+    /* ★開いた時に、ゆっくり半透明にする */
+    background-color: rgba(0, 0, 0, 0.5);
+    visibility: visible;
+    pointer-events: auto;
+}
+
+/* 親がis-openになったら、中身を元の位置に戻す */
+.modal-overlay.is-open .modal-content {
+    transform: translateY(0);
+    opacity: 1;
+    /* ★背景と一緒にじわっと出す */
+}
+
+.modal-content {
+    transform: translateY(8px);
+    opacity: 0;
+    /* ★中身も最初は消しておく */
+    transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+#alertTitle {
+    color: #dfdfdf;
+    width: 100%;
+    border-bottom: #dfdfdf 1px solid;
+    padding-bottom: 0.5rem;
+}
+
+#alertMessage {
+    color: #dfdfdf;
+    width: 100%;
+    margin: 20px 0;
+}
+
+#alertClose {
+    padding: 8px 16px;
+    width: 30%;
+    background: rgba(255, 255, 255, 0.1);
+    color: #dfdfdf;
+    border: #dfdfdf 1px solid;
+    border-radius: 9999px;
+    cursor: pointer;
+}
+
+#alertClose:focus {
+    outline: none;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+}
+
+#alertClose:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: #dfdfdf;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 隠すためのクラス */
+/* .hidden {
+    display: none;
+} */

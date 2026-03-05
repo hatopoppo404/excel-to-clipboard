@@ -72,7 +72,7 @@ dropZone.addEventListener('drop', (e) => {
     // ファイルがExcelファイルかどうかをチェック
     const allowedExtensions = ['.xlsx', '.xls', '.xlsb'];
     const extension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
-    if (!allowedExtensions.includes(extension)) return alert('Excelファイルをドロップしてください');
+    if (!allowedExtensions.includes(extension)) return showAlert('エラー', 'Excelファイルをドロップしてください');
 
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -92,8 +92,8 @@ dropZone.addEventListener('drop', (e) => {
         // console.log("読み込み成功！データの中身:", rows);
         // G. クリップボードにコピーする
         navigator.clipboard.writeText(resultText)
-            .then(() => alert('Excelの内容を整形してクリップボードにコピーしました'))
-            .catch(err => alert('コピーに失敗しました: ' + err));
+            .then(() => showAlert('成功', 'Excelの内容を整形してクリップボードにコピーしました'))
+            .catch(err => showAlert('エラー', 'コピーに失敗しました: ' + err));
     };
 
     // 読取実行！
@@ -129,14 +129,14 @@ btn.addEventListener('click', async () => {
     const finalString = formatData(rows, currentConfig); // ★呼び出し
     if (!finalString) return; // 失敗してたらここで止める
     await navigator.clipboard.writeText(finalString)
-        .then(() => alert('クリップボードの内容を整形しました'))
-        .catch(err => alert('コピーに失敗しました: ' + err));
+        .then(() => showAlert('成功', 'クリップボードの内容を整形しました'))
+        .catch(err => showAlert('エラー', 'コピーに失敗しました: ' + err));
 });
 
 
 function formatData(rows, config) {
     let hdrIndex = rows.findIndex(row => row.includes("品目")); // 「品目」がある行を探す
-    if (hdrIndex === -1) return alert("見出しが見つかりませんでした");
+    if (hdrIndex === -1) return showAlert('エラー', '見出しが見つかりませんでした');
     console.log(rows);
 
     const headerRow = rows[hdrIndex];
@@ -164,3 +164,16 @@ function formatData(rows, config) {
     console.log(resultText);
     return resultText;
 }
+
+function showAlert(title, message) {
+    document.getElementById('alertTitle').innerText = title;
+    document.getElementById('alertMessage').innerText = message;
+    document.getElementById('customAlert').classList.add('is-open');
+
+    document.getElementById('alertClose').focus();
+}
+
+// 閉じるボタンのイベント
+document.getElementById('alertClose').addEventListener('click', () => {
+    document.getElementById('customAlert').classList.remove('is-open');
+});
