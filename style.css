@@ -216,7 +216,7 @@ small {
     z-index: 1000;
     visibility: hidden;
     /* ★background-color も transition に追加！ */
-    transition: background-color 70ms, visibility 70ms;
+    transition: background-color 100ms, visibility 100ms;
     pointer-events: none;
 }
 
@@ -236,10 +236,10 @@ small {
 }
 
 .modal-content {
-    transform: translateY(8px);
+    transform: translateY(10px);
     opacity: 0;
     /* ★中身も最初は消しておく */
-    transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+    transition: transform 100ms ease-out, opacity 100ms ease-out;
 
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
